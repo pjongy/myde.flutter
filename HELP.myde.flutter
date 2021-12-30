@@ -1,0 +1,14 @@
+flutter
+  $ flutter
+
+  Check flutter development preparation
+    $ flutter doctor -v
+
+  Run debugger
+    $ flutter run
+
+adb
+  $ adb
+
+  Connect via tcp (5555 port)
+    $ adb connect {IP}
