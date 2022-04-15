@@ -1,4 +1,4 @@
-FROM pjongy/myde:1.0.1
+FROM pjongy/myde:3.0.0
 
 ENV DEBIAN_FRONTEND=noninteractive
 
