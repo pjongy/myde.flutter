@@ -10,5 +10,8 @@ flutter
 adb
   $ adb
 
+  Turn on debugging server on device(while usb debugging)
+    $ adb tcpip 5555
+
   Connect via tcp (5555 port)
     $ adb connect {IP}
