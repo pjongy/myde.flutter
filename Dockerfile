@@ -1,4 +1,4 @@
-FROM pjongy/myde:3.3.0
+FROM pjongy/myde:3.3.1
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -40,10 +40,9 @@ RUN yes "y" | $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "platform
 RUN yes "y" | $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "cmdline-tools;latest"
 RUN yes "y" | $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager --licenses
 
-RUN echo "export JAVA_HOME=/home/$USERNAME/.jabba/jdk/openjdk@1.12.0" >> ~/.zshrc
-ENV echo "export ANDROID_SDK_ROOT=$INSTALL_PATH/android" >> ~/.zshrc
-ENV echo "export ANDROID_HOME=$INSTALL_PATH/android" >> ~/.zshrc
-RUN echo "export PATH=$PATH:$INSTALL_PATH/flutter/bin:$INSTALL_PATH/android/cmdline-tools/tools/bin:$INSTALL_PATH/android/platform-tools" >> ~/.zshrc
+ENV ANDROID_SDK_ROOT="$INSTALL_PATH/android"
+ENV ANDROID_HOME="$INSTALL_PATH/android"
+ENV PATH="$PATH:$INSTALL_PATH/flutter/bin:$INSTALL_PATH/android/cmdline-tools/tools/bin:$INSTALL_PATH/android/platform-tools"
 
 COPY --chown=$USERNAME ./HELP.myde.flutter /home/$USERNAME/HELP.myde.flutter
 RUN cat /home/$USERNAME/HELP.myde.flutter >> /home/$USERNAME/HELP
