@@ -15,8 +15,9 @@ RUN sudo apt-get update
 RUN sudo apt-get install -y dart
 
 # flutter
-RUN wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.2.1-stable.tar.xz -O $INSTALL_PATH/flutter_linux_2.2.1-stable.tar.xz
-RUN tar xf $INSTALL_PATH/flutter_linux_2.2.1-stable.tar.xz
+ENV FLUTTER_VERSION 3.0.5
+RUN wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_$FLUTTER_VERSION-stable.tar.xz -O $INSTALL_PATH/flutter_linux_$FLUTTER_VERSION-stable.tar.xz
+RUN tar xf $INSTALL_PATH/flutter_linux_$FLUTTER_VERSION-stable.tar.xz
 RUN mv ./flutter $INSTALL_PATH
 
 RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip -O $INSTALL_PATH/commandlinetools-linux-7302050_latest.zip
