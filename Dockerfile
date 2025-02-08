@@ -1,27 +1,17 @@
-FROM pjongy/myde:4.0.7
+FROM pjongy/myde:4.7.0-amd64
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG USERNAME=dev
-ENV USERNAME $USERNAME
+ENV USERNAME=$USERNAME
 ARG INSTALL_PATH=/home/$USERNAME/installed
-ENV INSTALL_PATH $INSTALL_PATH
+ENV INSTALL_PATH=$INSTALL_PATH
 
-# install dart
-RUN sudo apt-get install -y apt-transport-https
-RUN sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
-RUN sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
-RUN sudo apt-get update
-RUN sudo apt-get install -y dart
-
-# flutter
-ENV FLUTTER_VERSION 3.0.5
-RUN wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_$FLUTTER_VERSION-stable.tar.xz -O $INSTALL_PATH/flutter_linux_$FLUTTER_VERSION-stable.tar.xz
-RUN tar xf $INSTALL_PATH/flutter_linux_$FLUTTER_VERSION-stable.tar.xz
-RUN mv ./flutter $INSTALL_PATH
+RUN sudo apt update \
+  && sudo apt install unzip cmake meson ninja-build cmake clang -y \
+  && pip3 install meson==1.7.0
 
 RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip -O $INSTALL_PATH/commandlinetools-linux-7302050_latest.zip
-RUN sudo apt install unzip
 RUN unzip $INSTALL_PATH/commandlinetools-linux-7302050_latest.zip
 RUN mkdir $INSTALL_PATH/android
 RUN mv cmdline-tools $INSTALL_PATH/android
@@ -30,20 +20,28 @@ RUN mv $INSTALL_PATH/android/cmdline-tools/bin $INSTALL_PATH/android/cmdline-too
 RUN mv $INSTALL_PATH/android/cmdline-tools/lib $INSTALL_PATH/android/cmdline-tools/tools
 
 # android sdk (command line tools)
-RUN bash -c 'source "/home/$USERNAME/.jabba/jabba.sh" && jabba install openjdk@1.12.0'
-ENV JAVA_HOME /home/$USERNAME/.jabba/jdk/openjdk@1.12.0
-ENV ANDROID_SDK_ROOT $INSTALL_PATH/android
-ENV ANDROID_HOME $INSTALL_PATH/android
+ENV ANDROID_SDK_ROOT=$INSTALL_PATH/android
+ENV ANDROID_HOME=$INSTALL_PATH/android
 
-RUN yes "y" | $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "build-tools;29.0.3"
-RUN yes "y" | $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "platforms;android-29"
-RUN yes "y" | $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "platform-tools"
-RUN yes "y" | $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "cmdline-tools;latest"
-RUN yes "y" | $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager --licenses
+# NOTE: "JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1)" to find available java which is installed via jabba
+RUN yes "y" | JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1) \
+  $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "build-tools;29.0.3"
+RUN yes "y" | JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1) \
+  $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "platforms;android-29"
+RUN yes "y" | JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1) \
+  $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "platform-tools"
+RUN yes "y" | JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1) \
+  $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "cmdline-tools;latest"
+RUN yes "y" | JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1) \
+  $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager --licenses
 
 ENV ANDROID_SDK_ROOT="$INSTALL_PATH/android"
 ENV ANDROID_HOME="$INSTALL_PATH/android"
 ENV PATH="$PATH:$INSTALL_PATH/flutter/bin:$INSTALL_PATH/android/cmdline-tools/tools/bin:$INSTALL_PATH/android/platform-tools"
+
+# install flutter
+COPY --chown=$USERNAME installer/* $INSTALL_PATH/installer/
+RUN $INSTALL_PATH/installer/flutter.sh
 
 COPY --chown=$USERNAME ./HELP.myde.flutter /home/$USERNAME/HELP.myde.flutter
 RUN cat /home/$USERNAME/HELP.myde.flutter >> /home/$USERNAME/HELP
