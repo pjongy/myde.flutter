@@ -6,10 +6,16 @@ ARG USERNAME=dev
 ENV USERNAME=$USERNAME
 ARG INSTALL_PATH=/home/$USERNAME/installed
 ENV INSTALL_PATH=$INSTALL_PATH
+ARG HOME_PATH=/home/$USERNAME
+ENV HOME_PATH=$HOME_PATH
 
 RUN sudo apt update \
   && sudo apt install unzip cmake meson ninja-build cmake clang -y \
   && pip3 install meson==1.7.0
+
+# NOTE: upgrade jdk to 1.17.0
+RUN echo "jabba install openjdk@1.17.0" >> $INSTALL_PATH/installer/jdk.sh
+RUN $INSTALL_PATH/installer/jdk.sh
 
 RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip -O $INSTALL_PATH/commandlinetools-linux-7302050_latest.zip
 RUN unzip $INSTALL_PATH/commandlinetools-linux-7302050_latest.zip
@@ -40,9 +46,9 @@ ENV ANDROID_HOME="$INSTALL_PATH/android"
 ENV PATH="$PATH:$INSTALL_PATH/flutter/bin:$INSTALL_PATH/android/cmdline-tools/tools/bin:$INSTALL_PATH/android/platform-tools"
 
 # install flutter
-COPY --chown=$USERNAME installer/* $INSTALL_PATH/installer/
+COPY --chown=$USERNAME arch/amd64/installer/* $INSTALL_PATH/installer/
 RUN $INSTALL_PATH/installer/flutter.sh
 
-COPY --chown=$USERNAME ./HELP.myde.flutter /home/$USERNAME/HELP.myde.flutter
-RUN cat /home/$USERNAME/HELP.myde.flutter >> /home/$USERNAME/HELP
-RUN rm ~/HELP.myde.flutter
+COPY --chown=$USERNAME ./HELP.myde.flutter $HOME_PATH/HELP.myde.flutter
+RUN cat $HOME_PATH/HELP.myde.flutter >> $HOME_PATH/HELP
+RUN rm $HOME_PATH/HELP.myde.flutter
