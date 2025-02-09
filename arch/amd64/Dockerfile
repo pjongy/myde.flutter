@@ -1,4 +1,4 @@
-FROM pjongy/myde:4.7.0-amd64
+FROM pjongy/myde:5.0.0-amd64
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -13,10 +13,6 @@ RUN sudo apt update \
   && sudo apt install unzip cmake meson ninja-build cmake clang -y \
   && pip3 install meson==1.7.0
 
-# NOTE: upgrade jdk to 1.17.0
-RUN echo "jabba install openjdk@1.17.0" >> $INSTALL_PATH/installer/jdk.sh
-RUN $INSTALL_PATH/installer/jdk.sh
-
 RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip -O $INSTALL_PATH/commandlinetools-linux-7302050_latest.zip
 RUN unzip $INSTALL_PATH/commandlinetools-linux-7302050_latest.zip
 RUN mkdir $INSTALL_PATH/android
@@ -30,15 +26,15 @@ ENV ANDROID_SDK_ROOT=$INSTALL_PATH/android
 ENV ANDROID_HOME=$INSTALL_PATH/android
 
 # NOTE: "JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1)" to find available java which is installed via jabba
-RUN yes "y" | JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1) \
+RUN yes "y" | JAVA_HOME=$HOME_PATH/.sdkman/candidates/java/current \
   $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "build-tools;29.0.3"
-RUN yes "y" | JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1) \
+RUN yes "y" | JAVA_HOME=$HOME_PATH/.sdkman/candidates/java/current \
   $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "platforms;android-29"
-RUN yes "y" | JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1) \
+RUN yes "y" | JAVA_HOME=$HOME_PATH/.sdkman/candidates/java/current \
   $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "platform-tools"
-RUN yes "y" | JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1) \
+RUN yes "y" | JAVA_HOME=$HOME_PATH/.sdkman/candidates/java/current \
   $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager "cmdline-tools;latest"
-RUN yes "y" | JAVA_HOME=$HOME/.jabba/jdk/$(jabba ls | head -n 1) \
+RUN yes "y" | JAVA_HOME=$HOME_PATH/.sdkman/candidates/java/current \
   $INSTALL_PATH/android/cmdline-tools/tools/bin/sdkmanager --licenses
 
 ENV ANDROID_SDK_ROOT="$INSTALL_PATH/android"

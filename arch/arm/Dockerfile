@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64/v8 pjongy/myde:4.7.0-arm
+FROM --platform=linux/arm64/v8 pjongy/myde:5.0.0-arm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
